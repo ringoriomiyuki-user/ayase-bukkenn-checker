@@ -1,0 +1,32 @@
+name: 大谷田団地空室チェック(テスト用)
+
+on:
+  schedule:
+    # 毎日0時(1日1回)。動作確認用。
+    - cron: '0 0 * * *'
+  workflow_dispatch: {}   # 手動実行も可能
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: JDKセットアップ
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: コンパイル
+        run: javac src/VacancyChecker.java -d out
+
+      - name: 大谷田団地をチェック
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: >
+          java -cp out VacancyChecker
+          281
+          "大谷田団地"
+          https://www.ur-net.go.jp/chintai/kanto/tokyo/20_2810.html

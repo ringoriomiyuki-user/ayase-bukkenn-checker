@@ -1,0 +1,32 @@
+name: 東綾瀬パークタウン空室チェック
+
+on:
+  schedule:
+    # 毎時0分(1時間ごと)。UTCだが頻度ベースなので問題なし。
+    - cron: '0 * * * *'
+  workflow_dispatch: {}   # 手動実行も可能
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: JDKセットアップ
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: コンパイル
+        run: javac src/VacancyChecker.java -d out
+
+      - name: 東綾瀬パークタウンをチェック
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: >
+          java -cp out VacancyChecker
+          700
+          "東綾瀬パークタウン"
+          https://www.ur-net.go.jp/chintai/kanto/tokyo/20_7000.html
