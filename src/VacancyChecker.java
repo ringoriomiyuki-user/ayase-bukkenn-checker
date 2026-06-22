@@ -109,7 +109,6 @@ public class VacancyChecker {
                 .uri(URI.create(NTFY_BASE + topic))
                 .timeout(Duration.ofSeconds(20))
                 .header("Title", "=?UTF-8?B?" + base64(name + "に空室あり") + "?=") // 日本語タイトル対応
-                .header("Tags", "house")
                 .header("Click", pageUrl)
                 .POST(HttpRequest.BodyPublishers.ofString(message, StandardCharsets.UTF_8))
                 .build();
